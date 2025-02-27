@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Container, Box, Paper, Typography } from "@mui/material";
 import { DataStore } from "@aws-amplify/datastore";
-import { ServiceRequest } from "../../models";
 // import { Storage } from "aws-amplify";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 import { CreateServiceRequestButton } from "../components/ServiceRequest";
 import ServiceRequestTable from "../components/Dashboard/ServiceRequestTable";
+import { generateClient } from "aws-amplify/api";
+const client = generateClient();
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -18,9 +19,11 @@ const Dashboard = () => {
     fetchData();
 
     // Subscribe to changes in ServiceRequest model
-    const subscription = DataStore.observe(ServiceRequest).subscribe(() => {
-      fetchServiceRequests();
-    });
+    const subscription = client.models.ServiceRequest.observeQuery().subscribe(
+      () => {
+        fetchServiceRequests();
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
@@ -33,7 +36,7 @@ const Dashboard = () => {
 
   const fetchServiceRequests = async () => {
     try {
-      const data = await DataStore.query(ServiceRequest);
+      const data = await client.models.ServiceRequest.list();
       setServiceRequests(data);
       return data;
     } catch (error) {
