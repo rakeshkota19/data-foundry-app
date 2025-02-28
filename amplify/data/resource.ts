@@ -15,6 +15,8 @@ const schema = a.schema({
       location: a.string().required(),
     })
     .authorization((allow) => [allow.authenticated()]),
+  // .authorization((allow) => [allow.owner()]),
+  // currently allows all authenicated users, we can also only allow show requests submitted by the current user
 });
 
 export type Schema = ClientSchema<typeof schema>;
