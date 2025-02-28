@@ -1,95 +1,109 @@
 import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Avatar,
-  Box,
-  Menu,
-  MenuItem,
-  Tooltip,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
 import { useAuthenticator } from "@aws-amplify/ui-react";
+import HomeIcon from "@mui/icons-material/Home";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import FolderIcon from "@mui/icons-material/Folder";
+import LoginIcon from "@mui/icons-material/Login";
+import { useNavigate, useLocation } from "react-router-dom";
+import { routes } from "../../utils/constants";
 
 const Header = () => {
-  const { user, signOut } = useAuthenticator((context) => [context.user]);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, signOut, authStatus } = useAuthenticator((context) => [
+    context.user,
+    context.authStatus,
+  ]);
+  const isAuthenticated = authStatus === "authenticated";
 
   const handleSignOut = () => {
-    handleMenuClose();
     signOut();
+    navigate(routes.home);
   };
 
-  // Get user's initials for the avatar
-  const getUserInitials = () => {
-    if (!user || !user.attributes) return "U";
-    const email = user.attributes.email || "";
-    return email.charAt(0).toUpperCase();
+  const navigateTo = (path) => {
+    navigate(path);
   };
+
+  const getButtonStyle = (path) => ({
+    mx: 1,
+    opacity: location.pathname === path ? 1 : 0.85,
+    borderBottom: location.pathname === path ? "2px solid white" : "none",
+    borderRadius: 0,
+    paddingBottom: "4px",
+    textTransform: "none",
+  });
 
   return (
+    // TODO make the header mobile friendly
     <AppBar position="sticky" color="primary">
       <Toolbar>
-        <Box display="flex" alignItems="center">
-          <DashboardIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div">
-            Service Request Portal
+        <Box
+          display="flex"
+          alignItems="center"
+          onClick={() => navigateTo(routes.home)}
+          sx={{ cursor: "pointer" }}
+        >
+          <Typography variant="h6" component="div" sx={{ mr: 3 }}>
+            Service Portal
           </Typography>
         </Box>
 
-        <Box sx={{ flexGrow: 1 }} />
-
-        <Box display="flex" alignItems="center">
-          <Tooltip title="Account settings">
-            <IconButton
-              edge="end"
-              color="inherit"
-              onClick={handleMenuOpen}
-              aria-controls="user-menu"
-              aria-haspopup="true"
-            >
-              <Avatar sx={{ bgcolor: "secondary.main", width: 35, height: 35 }}>
-                {getUserInitials()}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            id="user-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
+        <Box>
+          <Button
+            color="inherit"
+            startIcon={<HomeIcon />}
+            onClick={() => navigateTo(routes.home)}
+            sx={getButtonStyle("/")}
           >
-            <MenuItem disabled>
-              <Typography variant="body2">
-                {user?.attributes?.email || "User"}
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={handleSignOut}>
-              <ExitToAppIcon fontSize="small" sx={{ mr: 1 }} />
-              Logout
-            </MenuItem>
-          </Menu>
+            Home
+          </Button>
+
+          {isAuthenticated && (
+            <>
+              <Button
+                color="inherit"
+                startIcon={<DashboardIcon />}
+                onClick={() => navigateTo(routes.dashboard)}
+                sx={getButtonStyle("/dashboard")}
+              >
+                Dashboard
+              </Button>
+
+              <Button
+                color="inherit"
+                startIcon={<FolderIcon />}
+                onClick={() => navigateTo(routes.files)}
+                sx={getButtonStyle("/files")}
+              >
+                Files
+              </Button>
+            </>
+          )}
+        </Box>
+
+        <Box sx={{ flexGrow: 1 }} />
+        <Box display="flex" alignItems="center">
+          {isAuthenticated ? (
+            <Box display="flex" alignItems="center">
+              <Typography> Hi, User</Typography>
+
+              <Button color="inherit" onClick={handleSignOut}>
+                <ExitToAppIcon sx={{ mr: 1 }} />
+                Log out
+              </Button>
+            </Box>
+          ) : (
+            <Button
+              color="inherit"
+              startIcon={<LoginIcon />}
+              onClick={() => navigateTo(routes.login)}
+            >
+              Login
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Box, Paper, Typography } from "@mui/material";
-import { DataStore } from "@aws-amplify/datastore";
-// import { Storage } from "aws-amplify";
+import { Container, Box, Paper } from "@mui/material";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 import { CreateServiceRequestButton } from "../components/ServiceRequest";
@@ -12,13 +10,10 @@ const client = generateClient();
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [serviceRequests, setServiceRequests] = useState([]);
-  const [s3Files, setS3Files] = useState([]);
 
-  // Fetch data when component mounts
   useEffect(() => {
     fetchData();
 
-    // Subscribe to changes in ServiceRequest model
     const subscription = client.models.ServiceRequest.observeQuery().subscribe(
       () => {
         fetchServiceRequests();
@@ -29,30 +24,20 @@ const Dashboard = () => {
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
-    await Promise.all([fetchServiceRequests(), fetchS3Files()]);
-    setLoading(false);
+    fetchServiceRequests();
   };
 
   const fetchServiceRequests = async () => {
     try {
+      setLoading(true);
       const data = await client.models.ServiceRequest.list();
-      setServiceRequests(data);
+      setServiceRequests(data.data);
       return data;
     } catch (error) {
       console.error("Error fetching service requests:", error);
       return [];
-    }
-  };
-
-  const fetchS3Files = async () => {
-    try {
-      // const data = await Storage.list("");
-      // setS3Files(data.results);
-      // return data;
-    } catch (error) {
-      console.error("Error fetching S3 files:", error);
-      return [];
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,12 +48,8 @@ const Dashboard = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Service Request Dashboard
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          View and manage service requests
-        </Typography>
+        <h3> Service Request Dashboard</h3>
+        <p>View and manage service requests</p>
       </Box>
 
       <Box

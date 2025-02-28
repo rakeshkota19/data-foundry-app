@@ -1,6 +1,6 @@
 import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Chip, Box, Typography } from "@mui/material";
+import { Chip, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 
 const getSeverityChipColor = (severity) => {
   switch (severity) {
@@ -16,59 +16,162 @@ const getSeverityChipColor = (severity) => {
 };
 
 const ServiceRequestTable = ({ serviceRequests, loading }) => {
-  const columns = [
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const baseColumns = [
     {
       field: "id",
       headerName: "Case ID",
       flex: 0.7,
+      minWidth: 110,
       renderCell: (params) => (
-        <Typography variant="body2">
+        <Typography variant="body2" noWrap>
           {params.value.substring(0, 8)}...
         </Typography>
       ),
     },
-    { field: "name", headerName: "Request Name", flex: 1.5 },
-    { field: "description", headerName: "Description", flex: 2 },
+    {
+      field: "name",
+      headerName: "Request Name",
+      flex: 1.5,
+      minWidth: 150,
+      renderCell: (params) => (
+        <Typography
+          variant="body2"
+          sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+        >
+          {params.value}
+        </Typography>
+      ),
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 2,
+      minWidth: 200,
+      renderCell: (params) => (
+        <Typography
+          variant="body2"
+          sx={{
+            // overflow: "hidden",
+            // textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {params.value}
+        </Typography>
+      ),
+    },
     {
       field: "severity",
       headerName: "Severity",
       flex: 0.8,
+      minWidth: 100,
+      align: "center",
       renderCell: (params) => (
-        <Chip
-          label={params.value}
-          color={getSeverityChipColor(params.value)}
-          size="small"
-        />
+        <Box display="flex" justifyContent="center" width="100%">
+          <Chip
+            label={params.value}
+            color={getSeverityChipColor(params.value)}
+            size="small"
+          />
+        </Box>
       ),
     },
-    { field: "creationDate", headerName: "Created On", flex: 1 },
-    { field: "resolutionDate", headerName: "Resolution By", flex: 1 },
-    { field: "reporterName", headerName: "Reporter", flex: 1 },
-    { field: "location", headerName: "Location", flex: 1 },
+    {
+      field: "creationDate",
+      headerName: "Created On",
+      flex: 1,
+      minWidth: 110,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "resolutionDate",
+      headerName: "Resolution By",
+      flex: 1,
+      minWidth: 110,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "reporterName",
+      headerName: "Reporter",
+      flex: 1,
+      minWidth: 120,
+      align: "left",
+      headerAlign: "left",
+    },
+    {
+      field: "location",
+      headerName: "Location",
+      flex: 1,
+      minWidth: 120,
+      align: "left",
+      headerAlign: "left",
+    },
   ];
 
   return (
-    <div style={{ width: "100%", height: 500 }}>
+    <Box
+      sx={{ width: "100%", height: isMobile ? 400 : 500, overflowX: "auto" }}
+    >
       <DataGrid
         rows={serviceRequests}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[5, 10, 25]}
-        disableSelectionOnClick
-        loading={loading}
-        autoHeight
-        density="comfortable"
+        columns={baseColumns}
         initialState={{
-          sorting: {
-            sortModel: [{ field: "creationDate", sort: "desc" }],
+          pagination: {
+            paginationModel: { pageSize: 10 },
           },
         }}
+        pageSizeOptions={[10, 20]}
+        disableRowSelectionOnClick
+        loading={loading}
+        density="comfortable"
+        autoHeight
         sx={{
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: theme.palette.action.hover,
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+            fontWeight: "bold",
+            overflow: "visible",
+          },
           "& .MuiDataGrid-cell": {
             whiteSpace: "normal",
             wordWrap: "break-word",
-            lineHeight: "1.25rem",
+            lineHeight: "2rem",
+            padding: theme.spacing(1),
+            alignItems: "center",
           },
+          "& .MuiDataGrid-row:hover": {
+            backgroundColor: theme.palette.action.hover,
+          },
+          "& .MuiDataGrid-row:nth-of-type(even)": {
+            backgroundColor: theme.palette.action.selectedOpacity,
+          },
+          "& .MuiDataGrid-virtualScroller": {
+            overflowX: "hidden",
+          },
+          // "& .MuiDataGrid-main": {
+          //   overflow: isMobile ? "auto !important" : "unset",
+          // },
+          ...(isMobile && {
+            "& .MuiDataGrid-columnHeader": {
+              // padding: "0 8px",
+              overflow: "visible",
+              whiteSpace: "normal",
+              wordWrap: "break-word",
+            },
+            "& .MuiDataGrid-cell": {
+              padding: "8px",
+              whiteSpace: "normal",
+              wordWrap: "break-word",
+            },
+          }),
         }}
         components={{
           NoRowsOverlay: () => (
@@ -77,15 +180,16 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
               alignItems="center"
               justifyContent="center"
               height="100%"
+              p={2}
             >
-              <Typography color="text.secondary">
+              <Typography color="text.secondary" align="center">
                 No service requests found. Create one to get started.
               </Typography>
             </Box>
           ),
         }}
       />
-    </div>
+    </Box>
   );
 };
 

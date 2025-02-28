@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
-import { Authenticator } from "@aws-amplify/ui-react";
 import Dashboard from "./pages/Dashboard";
-import CreateForm from "./components/CreateForm";
 import Login from "./pages/Login";
-import Home from "./components/Home";
+import FilesPage from "./pages/FilesPage";
 import Layout from "./pages/Layout";
-import Header from "./components/Header/Header";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { routes } from "./utils/constants";
+import Home from "./pages/Home";
 
 const router = createBrowserRouter([
   {
@@ -14,28 +14,29 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        index: true,
+        path: routes.home,
         element: <Home />,
       },
       {
-        path: "/login",
+        path: routes.login,
         element: <Login />,
       },
       {
-        path: "/dashboard",
+        path: routes.dashboard,
+
         element: (
-          <Authenticator
-            children={
-              <>
-                <Header /> <Dashboard />
-              </>
-            }
-          />
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
         ),
       },
       {
-        path: "/create",
-        element: <Authenticator children={<CreateForm />} />,
+        path: routes.files,
+        element: (
+          <ProtectedRoute>
+            <FilesPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

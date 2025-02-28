@@ -1,4 +1,3 @@
-// src/components/ServiceRequest/CreateServiceRequestButton.jsx
 import React, { useState } from "react";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -6,14 +5,6 @@ import ServiceRequestForm from "./ServiceRequestForm";
 
 const CreateServiceRequestButton = ({ onRequestCreated }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   const handleSubmitSuccess = () => {
     if (onRequestCreated) {
@@ -27,7 +18,7 @@ const CreateServiceRequestButton = ({ onRequestCreated }) => {
         variant="contained"
         color="primary"
         startIcon={<AddIcon />}
-        onClick={handleOpenModal}
+        onClick={() => setIsModalOpen(true)}
         sx={{ mb: 3 }}
       >
         Create Service Request
@@ -35,7 +26,7 @@ const CreateServiceRequestButton = ({ onRequestCreated }) => {
 
       <ServiceRequestForm
         open={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => setIsModalOpen(false)}
         onSubmitSuccess={handleSubmitSuccess}
       />
     </>

@@ -6,6 +6,7 @@ import { Authenticator } from "@aws-amplify/ui-react";
 
 import { Amplify } from "aws-amplify";
 import outputs from "./amplify_outputs.json";
+// import outputs from "@/amplify_outputs.json";
 
 Amplify.configure(outputs);
 const root = ReactDOM.createRoot(document.getElementById("root"));

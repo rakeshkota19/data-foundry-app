@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import { format, addDays } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
-import { DataStore } from "@aws-amplify/datastore";
 import { generateClient } from "aws-amplify/api";
 
 const severityOptions = [
@@ -30,8 +29,8 @@ const severityOptions = [
 const initialFormState = {
   name: "",
   description: "",
-  creationDate: format(new Date(), "yyyy-MM-dd"),
-  severity: "Low",
+  creationDate: "",
+  severity: "",
   reporterName: "",
   reporterEmail: "",
   location: "",
@@ -44,7 +43,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Calculate resolution date based on severity and creation date
   const calculateResolutionDate = () => {
     if (!formData.creationDate) return "";
 
@@ -52,6 +50,8 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
     const severityOption = severityOptions.find(
       (option) => option.value === formData.severity
     );
+
+    if (!severityOption || !creationDate) return "";
     const daysToAdd = severityOption ? severityOption.days : 5;
 
     return format(addDays(creationDate, daysToAdd), "yyyy-MM-dd");
@@ -63,7 +63,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear errors when field is changed
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -104,7 +103,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
     setIsSubmitting(true);
 
     try {
-      // Create a new service request
       await client.models.ServiceRequest.create({
         id: uuidv4(),
         name: formData.name,
@@ -117,7 +115,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
         location: formData.location,
       });
 
-      // Reset form and close modal
       setFormData({ ...initialFormState });
       setErrors({});
       onSubmitSuccess();
@@ -126,7 +123,7 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
       console.error("Error creating service request:", error);
       setErrors((prev) => ({
         ...prev,
-        submit: "Failed to create service request. Please try again.",
+        submit: "Failed to create service request. Server Error.",
       }));
     } finally {
       setIsSubmitting(false);
@@ -219,12 +216,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText>
-                Resolution in{" "}
-                {severityOptions.find((opt) => opt.value === formData.severity)
-                  ?.days || 5}{" "}
-                days
-              </FormHelperText>
             </FormControl>
           </Grid>
 
@@ -238,7 +229,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
               variant="outlined"
               error={Boolean(errors.reporterName)}
               helperText={errors.reporterName}
-              placeholder="E.g., Alex Morgan"
             />
           </Grid>
 
@@ -253,7 +243,6 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
               variant="outlined"
               error={Boolean(errors.reporterEmail)}
               helperText={errors.reporterEmail}
-              placeholder="E.g., alex.morgan@example.com"
             />
           </Grid>
 
@@ -267,13 +256,12 @@ const ServiceRequestForm = ({ open, onClose, onSubmitSuccess }) => {
               variant="outlined"
               error={Boolean(errors.location)}
               helperText={errors.location}
-              placeholder="E.g., Melbourne"
             />
           </Grid>
 
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Resolution Date (Auto-calculated)"
+              label="Resolution Date"
               value={resolutionDate}
               fullWidth
               variant="outlined"
