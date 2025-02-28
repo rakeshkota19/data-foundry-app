@@ -8,12 +8,9 @@ import {
   Card,
   CardMedia,
   CardContent,
-  CardActions,
-  Button,
 } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
-import GetAppIcon from "@mui/icons-material/GetApp";
-import { list, getUrl, downloadData } from "@aws-amplify/storage";
+import { list, getUrl } from "@aws-amplify/storage";
 
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -36,8 +33,6 @@ const FilesPage = () => {
       const response = await list({
         path: "auth-images/",
       });
-
-      console.log("vinay", typeof response, response);
 
       const filteredFiles = response.items.filter(
         (file) => !file.path.endsWith("/") && file.size > 0
@@ -72,24 +67,7 @@ const FilesPage = () => {
     return imageExtensions.includes(extension);
   };
 
-  // const handleDownload = async (filePath) => {
-  //   try {
-  //     const blob = await downloadData({ key: filePath });
-  //     const url = URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = getFileNameFromPath(filePath);
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //     URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error("Error downloading file:", error);
-  //   }
-  // };
-
   const getFileNameFromPath = (path) => {
-    // Extract filename from the path
     const parts = path.split("/");
     return parts[parts.length - 1] || path;
   };

@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [serviceRequests, setServiceRequests] = useState([]);
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
 
     const subscription = client.models.ServiceRequest.observeQuery().subscribe(
       () => {

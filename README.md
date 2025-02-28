@@ -1,32 +1,69 @@
-- [Setup Instructions](#setup-instructions)
-- [AWS](#aws)
-  - [S3](#s3)
-  - [Amplify](#amplify)
-    - [Local development instructions](#local-development-instructions)
-    - [Amplify Misc commands](#amplify-misc-commands)
+# Service Request Portal
 
-# Setup Instructions
+This project is a web application built with React and AWS Amplify that includes user authentication, S3 file management, and a service request system with data stored in DynamoDB.
 
-# AWS
+## Features
 
-## S3
+- User authentication with AWS Cognito
+- Dashboard for viewing and managing service requests
+- File browser for accessing files stored in S3
+- Dynamic form for creating service requests
 
-## Amplify
+## Live Demo
 
-### Local development instructions
+You can access the live site at: [Service Portal](https://deploy.d1ph28uy6927s5.amplifyapp.com/)
 
-- Create backend for amplify using the command
-  ```
-   npm create amplify@latest
-  ```
-- Create auth and data models in resource file
-- Create sandbox and it will generate the amplify_outputs.json or download it from the Aws amplify page
-- Use the file to configure Amplify in frontend and use the Authenicator from amplify-react-ui
-- Generate create forms for models using amplify
+Login credentials:
 
-### Amplify Misc commands
+- Email: rakeshkota19@gmail.com
+- Password: Qwerty@123
 
-- Create command
-  - `npx ampx sandbox --profile default`
-- Command for generating form
-  - `npx ampx generate forms`
+## Setup Instructions
+
+### Prerequisites
+
+- Node.js
+- npm
+- AWS account with appropriate permissions
+- Git
+
+### Local Development
+
+1. Clone the repository: https://github.com/rakeshkota19/data-foundry-app
+2. Install all dependencies : npm install
+3. Install Amplify: npm create amplify@latest -y
+4. Setup AWS profile : aws configure sso
+5. Create a sandbox env : npx ampx sandbox --profile default-name
+6. Sanbox will generate the amplify_outputs file
+7. copy amplify_outputs.json to src folder
+8. Start the app: npm start
+
+## Design Decisions and Trade-offs
+
+- Material UI vs. Custom CSS -
+  I chose Material UI for the UI components to provide a consistent, professional look while maintaining good development speed
+- Single Page Application (SPA) -
+  The application is built as a SPA to provide a seamless user experience. This approach reduces server load and provides faster transitions between pages, though it requires proper state management and routing.
+- Modal Form vs. Separate Page -
+  Service request form is implemented as a modal dialog rather than a separate page to keep the user within the context of their current task and improve workflow efficiency.
+- S3 File Access Control -
+  I designed the storage structure with two folders in S3:  
+  auth-images/: For authenticated users only
+  images/: For all users (including guests)
+
+  While I didn't get time to fully implement this separation in the UI, the proper access controls have been defined at the S3 bucket level using IAM policies. This approach allows for granular control over file access based on authentication status.
+
+## Challenges and Learnings
+
+- Configuration File Issues -
+  A significant amount of time was spent dealing with the Amplify configuration process. The React restriction on importing files from outside the src/ directory caused issues with the generated amplify_outputs.json file. The AWS Amplify documentation wasn't entirely clear on the best practices for handling this in a Create React App environment.
+  The solution involved copying the file into the src/ directory during the build process, which required additional build configuration.
+
+## Future Improvements
+
+- Complete implementation of file access controls based on authentication status
+- Implement search and filtering for service requests
+- Add file upload functionality
+- Add more test cases
+- Add DAX caching for improved
+- XSS Prevention: All user inputs are properly sanitized before being stored or displayed to prevent cross-site scripting attacks.

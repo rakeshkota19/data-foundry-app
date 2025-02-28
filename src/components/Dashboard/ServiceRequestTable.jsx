@@ -19,6 +19,7 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Define which columns to show based on screen size
   const baseColumns = [
     {
       field: "id",
@@ -54,11 +55,10 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
         <Typography
           variant="body2"
           sx={{
-            // overflow: "hidden",
-            // textOverflow: "ellipsis",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
+            overflow: "hidden",
           }}
         >
           {params.value}
@@ -117,7 +117,13 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
 
   return (
     <Box
-      sx={{ width: "100%", height: isMobile ? 400 : 500, overflowX: "auto" }}
+      sx={{
+        width: "100%",
+        overflowX: "auto",
+        "& .MuiDataGrid-root": {
+          overflow: "visible",
+        },
+      }}
     >
       <DataGrid
         rows={serviceRequests}
@@ -131,14 +137,15 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
         disableRowSelectionOnClick
         loading={loading}
         density="comfortable"
-        autoHeight
+        autoHeight={false}
         sx={{
+          width: isMobile ? "max-content" : "100%",
+          minWidth: "100%",
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: theme.palette.action.hover,
             whiteSpace: "normal",
             wordWrap: "break-word",
             fontWeight: "bold",
-            overflow: "visible",
           },
           "& .MuiDataGrid-cell": {
             whiteSpace: "normal",
@@ -154,14 +161,13 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
             backgroundColor: theme.palette.action.selectedOpacity,
           },
           "& .MuiDataGrid-virtualScroller": {
-            overflowX: "hidden",
+            overflowX: "auto",
           },
-          // "& .MuiDataGrid-main": {
-          //   overflow: isMobile ? "auto !important" : "unset",
-          // },
+          "& .MuiDataGrid-main": {
+            overflow: "auto",
+          },
           ...(isMobile && {
             "& .MuiDataGrid-columnHeader": {
-              // padding: "0 8px",
               overflow: "visible",
               whiteSpace: "normal",
               wordWrap: "break-word",
