@@ -1,3 +1,14 @@
+- [Service Request Portal](#service-request-portal)
+  - [Features](#features)
+  - [Live Demo](#live-demo)
+  - [Setup Instructions](#setup-instructions)
+    - [Prerequisites](#prerequisites)
+    - [Local Development](#local-development)
+  - [Design Decisions and Trade-offs](#design-decisions-and-trade-offs)
+  - [Challenges and Learnings](#challenges-and-learnings)
+  - [Future Issues / Improvements](#future-issues--improvements)
+  - [Miscellaneous](#miscellaneous)
+
 # Service Request Portal
 
 This project is a web application built with React and AWS Amplify that includes user authentication, S3 file management, and a service request system with data stored in DynamoDB.
@@ -24,6 +35,7 @@ Login credentials:
 
 - Node.js
 - npm
+- AWS Cli
 - AWS account with appropriate permissions
 - Git
 
@@ -35,8 +47,9 @@ Login credentials:
 4. Setup AWS profile : aws configure sso
 5. Create a sandbox env : npx ampx sandbox --profile default-name
 6. Sanbox will generate the amplify_outputs file
-7. copy amplify_outputs.json to src folder
-8. Start the app: npm start
+7. We can also generate create/update modal forms using - npx ampx generate forms
+8. copy amplify_outputs.json to src folder
+9. Start the app: npm start
 
 ## Design Decisions and Trade-offs
 
@@ -59,11 +72,16 @@ Login credentials:
   A significant amount of time was spent dealing with the Amplify configuration process. The React restriction on importing files from outside the src/ directory caused issues with the generated amplify_outputs.json file. The AWS Amplify documentation wasn't entirely clear on the best practices for handling this in a Create React App environment.
   The solution involved copying the file into the src/ directory during the build process, which required additional build configuration.
 
-## Future Improvements
+## Future Issues / Improvements
 
 - Complete implementation of file access controls based on authentication status
 - Implement search and filtering for service requests
 - Add file upload functionality
-- Add more test cases
-- Add DAX caching for improved
+- Menu header should be mobile responsive
+- Add test cases
+- Add DAX caching for improved performance
 - XSS Prevention: All user inputs are properly sanitized before being stored or displayed to prevent cross-site scripting attacks.
+
+## Miscellaneous
+
+- I didnot use the Amplify modal forms which are stored in ui-components folder.I have created create custom form component

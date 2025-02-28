@@ -12,8 +12,6 @@ const Dashboard = () => {
   const [serviceRequests, setServiceRequests] = useState([]);
 
   useEffect(() => {
-    // fetchData();
-
     const subscription = client.models.ServiceRequest.observeQuery().subscribe(
       () => {
         fetchServiceRequests();
@@ -22,10 +20,6 @@ const Dashboard = () => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const fetchData = async () => {
-    fetchServiceRequests();
-  };
 
   const fetchServiceRequests = async () => {
     try {

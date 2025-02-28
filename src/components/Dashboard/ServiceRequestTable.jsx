@@ -24,11 +24,14 @@ const ServiceRequestTable = ({ serviceRequests, loading }) => {
     {
       field: "id",
       headerName: "Case ID",
-      flex: 0.7,
+      flex: 1,
       minWidth: 110,
       renderCell: (params) => (
-        <Typography variant="body2" noWrap>
-          {params.value.substring(0, 8)}...
+        <Typography
+          variant="body2"
+          sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+        >
+          {params.value}
         </Typography>
       ),
     },
