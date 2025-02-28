@@ -58,7 +58,9 @@ Login credentials:
 - Single Page Application (SPA) -
   The application is built as a SPA to provide a seamless user experience. This approach reduces server load and provides faster transitions between pages, though it requires proper state management and routing.
 - Modal Form vs. Separate Page -
-  Service request form is implemented as a modal dialog rather than a separate page to keep the user within the context of their current task and improve workflow efficiency.
+  Service request form is implemented as a modal dialog rather than a separate page to keep the user within the context of their current task.
+- State management-
+  I used React's Context API for global states like login authentication info and theme. For other component-level states, I utilized React's built-in useState and useEffect hooks. Implementing a complex state management solution like Redux would have been overkill for this application's requirements, given the relatively simple state interactions.
 - S3 File Access Control -
   I designed the storage structure with two folders in S3:  
   auth-images/: For authenticated users only
@@ -71,17 +73,20 @@ Login credentials:
 - Configuration File Issues -
   A significant amount of time was spent dealing with the Amplify configuration process. The React restriction on importing files from outside the src/ directory caused issues with the generated amplify_outputs.json file. The AWS Amplify documentation wasn't entirely clear on the best practices for handling this in a Create React App environment.
   The solution involved copying the file into the src/ directory during the build process, which required additional build configuration.
+- Amplify -
+  This is my first time using Amplify extensively, so I occasionally spent time debugging issues encountered while dealing with models and storage. I have learned how to build a small scale full-stack application through this project.
 
 ## Future Issues / Improvements
 
+- Add test cases
 - Complete implementation of file access controls based on authentication status
 - Implement search and filtering for service requests
 - Add file upload functionality
 - Menu header should be mobile responsive
-- Add test cases
-- Add DAX caching for improved performance
+- Add/Enable DAX for caching to improve performance
 - XSS Prevention: All user inputs are properly sanitized before being stored or displayed to prevent cross-site scripting attacks.
+- Cache the S3 files
 
 ## Miscellaneous
 
-- I didnot use the Amplify modal forms which are stored in ui-components folder.I have created create custom form component
+- I didnot use the Amplify modal forms which are stored in ui-components folder.I have created custom create form component
